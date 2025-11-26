@@ -1,0 +1,98 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Mini Social — Demo</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+</head>
+<body>
+  <h2>Mini Social (Demo)</h2>
+  <div id="user-section">
+    <button id="loginBtn">Sign in with Google</button>
+    <button id="logoutBtn" style="display:none">Logout</button>
+    <div id="userInfo"></div>
+  </div>
+
+  <div id="postSection" style="display:none">
+    <textarea id="postText" placeholder="Write something..."></textarea><br/>
+    <button id="postBtn">Post</button>
+  </div>
+
+  <h3>Feed</h3>
+  <ul id="feed"></ul>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+  <script>
+    // --- Replace with your Firebase config ---
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJ.firebaseapp.com",
+      projectId: "YOUR_PROJ",
+      storageBucket: "YOUR_PROJ.appspot.com",
+      messagingSenderId: "SENDER_ID",
+      appId: "APP_ID"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    const loginBtn = document.getElementById('loginBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const userInfo = document.getElementById('userInfo');
+    const postSection = document.getElementById('postSection');
+    const postBtn = document.getElementById('postBtn');
+    const postText = document.getElementById('postText');
+    const feed = document.getElementById('feed');
+
+    loginBtn.onclick = () => {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      auth.signInWithPopup(provider).catch(console.error);
+    };
+    logoutBtn.onclick = () => auth.signOut();
+
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        loginBtn.style.display = 'none';
+        logoutBtn.style.display = 'inline';
+        userInfo.innerText = `Logged in as ${user.displayName}`;
+        postSection.style.display = 'block';
+      } else {
+        loginBtn.style.display = 'inline';
+        logoutBtn.style.display = 'none';
+        userInfo.innerText = '';
+        postSection.style.display = 'none';
+      }
+    });
+
+    postBtn.onclick = async () => {
+      const user = auth.currentUser;
+      const text = postText.value.trim();
+      if (!user || !text) return alert('Login and write something.');
+      await db.collection('posts').add({
+        uid: user.uid,
+        name: user.displayName,
+        text,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      postText.value = '';
+    };
+
+    // Realtime feed
+    db.collection('posts').orderBy('createdAt','desc').limit(50)
+      .onSnapshot(snap => {
+        feed.innerHTML = '';
+        snap.forEach(doc => {
+          const d = doc.data();
+          const li = document.createElement('li');
+          const time = d.createdAt && d.createdAt.toDate ? d.createdAt.toDate().toLocaleString() : '';
+          li.textContent = `${d.name}: ${d.text} — ${time}`;
+          feed.appendChild(li);
+        });
+      });
+  </script>
+</body>
+</html>
