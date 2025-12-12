@@ -1,0 +1,14 @@
+name = "xizoa-api"
+main = "src/index.js"
+compatibility_date = "2025-12-12"
+
+account_id = "YOUR_ACCOUNT_ID"
+zone_id = "YOUR_ZONE_ID"
+workers_dev = false
+
+routes = ["api.xizoa.com/*"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "xizoa_d1"
+database_id = "YOUR_D1_DATABASE_ID"
