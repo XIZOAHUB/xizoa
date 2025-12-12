@@ -2,22 +2,16 @@ name = "xizoa-api"
 main = "src/index.js"
 compatibility_date = "2024-12-12"
 
-# Cloudflare Dashboard se apni IDs yahan daalein
-account_id = "YOUR_ACCOUNT_ID_HERE"
-workers_dev = false 
+# Cloudflare Dashboard के URL में देखिए, वहां account_id मिल जाएगा
+account_id = "APNA_ACCOUNT_ID_YAHAN_DAALEIN"
+workers_dev = true
 
-# Custom Domain Setup
-routes = [
-  { pattern = "api.xizoa.com/*", zone_id = "YOUR_ZONE_ID_HERE" }
-]
-
-# Database Connection
+# Database Connection (ID maine aapke screenshot se le li hai)
 [[d1_databases]]
 binding = "DB"
 database_name = "xizoa_d1"
-database_id = "YOUR_DATABASE_ID_HERE" # Wo ID jo tumne copy ki thi
+database_id = "7e9daa64-7d20-4100-87bc-52080f3607c8"
 
-# Public Variables
 [vars]
-API_URL = "https://api.xizoa.com"
-APP_URL = "https://app.xizoa.com" # Agar Pages par hai to uska URL, warna localhost
+API_URL = "https://xizoa-api.priyanshumaurya758.workers.dev"
+APP_URL = "https://app.xizoa.com"
