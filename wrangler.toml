@@ -1,17 +1,15 @@
-name = "xizoa-api"
+%%writefile wrangler.toml
+name = "api"
 main = "src/index.js"
 compatibility_date = "2024-12-12"
-
-# ✅ आपकी असली Account ID (Screenshot se li hai)
 account_id = "4ab2ec221eb0631878fd0d13697a9fc5"
-
 workers_dev = true
 
-# ✅ Database ID (Screenshot se li hai)
 [[d1_databases]]
 binding = "DB"
 database_name = "xizoa_d1"
-database_id = "7e9daa64-7d20-4100-87bc-52080f3607c8"
+# 👇 YAHAN APNI NAYI ID PASTE KARNA (Jo Step 1 ya 2 se mili)
+database_id = "YAHAN_NAYI_ID_DALO"
 
 [vars]
 API_URL = "https://api.xizoa.com"
