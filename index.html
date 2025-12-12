@@ -6,90 +6,101 @@
     <title>XIZOA</title>
     <link href="https://fonts.googleapis.com/css2?family=Grand+Hotel&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg-body: #fafafa; --bg-card: #ffffff; --text-main: #262626; --text-secondary: #8e8e8e;
-            --border-color: #dbdbdb; --btn-primary: #0095f6; --btn-text: #ffffff;
-        }
-        [data-theme="dark"] {
-            --bg-body: #000000; --bg-card: #000000; --text-main: #f5f5f5; --text-secondary: #a8a8a8;
-            --border-color: #363636; --btn-primary: #0095f6;
-        }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, Roboto, sans-serif; }
-        body { background-color: var(--bg-body); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .container { width: 100%; max-width: 350px; padding: 20px 0; }
-        .card { background: var(--bg-card); border: 1px solid var(--border-color); padding: 40px 30px; margin-bottom: 10px; text-align: center; }
-        .logo { font-family: 'Grand Hotel', cursive; font-size: 3rem; margin-bottom: 30px; }
-        .btn { display: flex; align-items: center; justify-content: center; width: 100%; padding: 7px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; text-decoration: none; margin-bottom: 12px; border: 1px solid transparent; }
-        .btn-primary { background-color: var(--btn-primary); color: var(--btn-text); }
-        .btn-github { background-color: #24292f; color: white; }
-        .btn-google { background-color: transparent; border: 1px solid var(--border-color); color: var(--text-main); }
+        /* Instagram-like Clean CSS */
+        :root { --bg: #fafafa; --card: #fff; --text: #262626; --btn: #0095f6; --border: #dbdbdb; }
+        [data-theme="dark"] { --bg: #000; --card: #000; --text: #f5f5f5; --btn: #0095f6; --border: #363636; }
+        
+        body { background: var(--bg); color: var(--text); font-family: -apple-system, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .container { width: 100%; max-width: 350px; padding: 20px; }
+        .card { background: var(--card); border: 1px solid var(--border); padding: 40px 20px; text-align: center; margin-bottom: 10px; }
+        .logo { font-family: 'Grand Hotel', cursive; font-size: 3rem; margin-bottom: 30px; cursor: pointer; }
+        
+        .btn { display: block; width: 100%; padding: 8px; border-radius: 8px; font-weight: 600; text-decoration: none; margin-bottom: 10px; border: 1px solid transparent; cursor: pointer; }
+        .btn-primary { background: var(--btn); color: white; }
+        .btn-dark { background: #24292f; color: white; }
+        .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
+        
+        .profile-pic { width: 100px; height: 100px; border-radius: 50%; margin-bottom: 15px; border: 1px solid var(--border); }
         .hidden { display: none !important; }
-        .loader { border: 2px solid var(--bg-body); border-top: 2px solid var(--text-secondary); border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; margin: 20px auto; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .profile-pic { width: 100px; height: 100px; border-radius: 50%; margin-bottom: 15px; }
+        .error { color: red; font-size: 0.8rem; margin-top: 10px; }
     </style>
 </head>
 <body>
+
     <div class="container">
         <div class="card">
-            <h1 class="logo">Xizoa</h1>
-            <div id="loading" class="loader"></div>
+            <h1 class="logo" onclick="location.reload()">Xizoa</h1>
+            
+            <div id="loading">Loading...</div>
 
             <div id="login-view" class="hidden">
-                <p style="color: var(--text-secondary); margin-bottom: 20px;">Sign up to see photos from friends.</p>
-                <a id="btn-github" href="#" class="btn btn-github">Log in with GitHub</a>
-                <a id="btn-google" href="#" class="btn btn-google">Log in with Google</a>
+                <p style="color:#8e8e8e; margin-bottom:20px;">Sign up to verify integration.</p>
+                <a href="https://api.xizoa.com/auth/github" class="btn btn-dark">Log in with GitHub</a>
+                <a href="#" class="btn btn-outline" onclick="alert('Google login coming soon!')">Log in with Google</a>
+                <div id="error-msg" class="error"></div>
             </div>
 
             <div id="profile-view" class="hidden">
-                <img id="userAvatar" class="profile-pic" src="" alt="Profile">
-                <h2 id="userLogin" style="font-size: 1.2rem;"></h2>
-                <button id="logoutBtn" class="btn" style="color: #ed4956; background: none; margin-top: 20px;">Log Out</button>
+                <img id="u-img" class="profile-pic" src="">
+                <h2 id="u-name" style="font-weight:300;"></h2>
+                <p id="u-login" style="font-weight:600; margin-bottom:20px;"></p>
+                <button class="btn btn-primary">Open App</button>
+                <button class="btn" style="color:red; background:none;" onclick="logout()">Log Out</button>
             </div>
         </div>
     </div>
 
     <script>
-        // ⚠️ IMPORTANT: Deploy backend first, then paste your worker URL here!
-        // Example: const API_URL = 'https://api.your-name.workers.dev';
-        const API_URL = 'https://api.xizoa.com'; 
+        // ⚠️ DOMAINS CONFIGURATION
+        const API_URL = 'https://api.xizoa.com';
 
-        // Update Login Links automatically
-        document.getElementById('btn-github').href = `${API_URL}/auth/github`;
-        document.getElementById('btn-google').href = `${API_URL}/auth/google`;
-
-        // Logic
-        const views = { loading: document.getElementById('loading'), login: document.getElementById('login-view'), profile: document.getElementById('profile-view') };
-        
-        function switchView(view) {
-            Object.values(views).forEach(el => el.classList.add('hidden'));
-            views[view].classList.remove('hidden');
-        }
-
-        async function fetchMe() {
+        // 1. Check if User is Logged In
+        async function checkUser() {
             try {
+                // 'credentials: include' is CRITICAL for cookies to work across domains
                 const res = await fetch(`${API_URL}/me`, { method: 'GET', credentials: 'include' });
-                if (!res.ok) throw new Error('Not auth');
-                const data = await res.json();
                 
-                if (data.authenticated) {
-                    document.getElementById('userLogin').textContent = data.user.login || data.user.name;
-                    document.getElementById('userAvatar').src = data.user.avatar_url;
-                    switchView('profile');
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.authenticated) {
+                        showProfile(data.user);
+                    } else {
+                        showLogin();
+                    }
                 } else {
-                    switchView('login');
+                    showLogin();
                 }
-            } catch {
-                switchView('login');
+            } catch (err) {
+                console.error(err);
+                showLogin();
+                document.getElementById('error-msg').innerText = "⚠️ API Connection Failed. Check Console.";
             }
         }
 
-        document.getElementById('logoutBtn').addEventListener('click', () => {
-            document.cookie = "xizoa_session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-            window.location.reload();
-        });
+        // 2. UI Helpers
+        function showLogin() {
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('login-view').classList.remove('hidden');
+        }
 
-        fetchMe();
+        function showProfile(user) {
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('profile-view').classList.remove('hidden');
+            
+            document.getElementById('u-name').innerText = user.name || 'User';
+            document.getElementById('u-login').innerText = '@' + user.login;
+            document.getElementById('u-img').src = user.avatar_url || 'https://ui-avatars.com/api/?name=User';
+        }
+
+        // 3. Logout
+        function logout() {
+            // Clear cookie by setting past date
+            document.cookie = "xizoa_session=; domain=.xizoa.com; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;";
+            window.location.reload();
+        }
+
+        // Start
+        checkUser();
     </script>
 </body>
 </html>
