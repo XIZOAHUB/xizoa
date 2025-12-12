@@ -7,129 +7,177 @@
     <link href="https://fonts.googleapis.com/css2?family=Grand+Hotel&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         :root { --bg: #fafafa; --card: #fff; --text: #262626; --btn: #0095f6; --border: #dbdbdb; }
-        [data-theme="dark"] { --bg: #000; --card: #000; --text: #f5f5f5; --btn: #0095f6; --border: #363636; }
-        body { background: var(--bg); color: var(--text); font-family: -apple-system, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
-        .container { width: 100%; max-width: 350px; padding: 20px; }
-        .card { background: var(--card); border: 1px solid var(--border); padding: 30px; text-align: center; margin-bottom: 10px; }
-        .logo { font-family: 'Grand Hotel', cursive; font-size: 3rem; margin-bottom: 20px; }
-        input { width: 100%; padding: 10px; margin-bottom: 8px; border: 1px solid var(--border); border-radius: 4px; background: var(--bg); color: var(--text); }
-        .btn { display: block; width: 100%; padding: 8px; border-radius: 8px; font-weight: 600; cursor: pointer; border: none; margin-top: 10px; }
-        .btn-primary { background: var(--btn); color: white; }
-        .divider { display: flex; align-items: center; margin: 20px 0; color: #8e8e8e; font-size: 0.8rem; font-weight: 600; }
-        .divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: var(--border); }
+        [data-theme="dark"] { --bg: #000; --card: #121212; --text: #f5f5f5; --btn: #0095f6; --border: #363636; }
+        body { background: var(--bg); color: var(--text); font-family: -apple-system, sans-serif; margin: 0; padding-bottom: 60px; }
+        
+        /* Layout */
+        .container { max-width: 470px; margin: 0 auto; padding-top: 10px; }
         .hidden { display: none !important; }
-        .link { color: var(--btn); font-weight: 600; cursor: pointer; }
-        .social-btn { margin-bottom: 10px; background: transparent; border: 1px solid var(--border); color: var(--text); }
+
+        /* Auth Screen */
+        .auth-container { height: 100vh; display: flex; align-items: center; justify-content: center; flex-direction: column; }
+        .auth-card { background: var(--card); border: 1px solid var(--border); padding: 30px; text-align: center; width: 350px; }
+        .logo { font-family: 'Grand Hotel', cursive; font-size: 3rem; margin-bottom: 20px; }
+        input { width: 100%; padding: 10px; margin-bottom: 8px; background: var(--bg); border: 1px solid var(--border); color: var(--text); box-sizing: border-box; }
+        .btn { width: 100%; padding: 8px; border-radius: 8px; font-weight: 600; cursor: pointer; border: none; background: var(--btn); color: white; margin-top: 10px; }
+        
+        /* Feed Post */
+        .post { background: var(--card); border: 1px solid var(--border); margin-bottom: 15px; border-radius: 3px; }
+        .post-header { padding: 10px; display: flex; align-items: center; }
+        .avatar { width: 32px; height: 32px; border-radius: 50%; margin-right: 10px; background: #eee; }
+        .post-img { width: 100%; display: block; }
+        .post-footer { padding: 10px; }
+        .caption { margin-top: 5px; }
+
+        /* Create Post Form */
+        .create-form { padding: 20px; text-align: center; }
+        
+        /* Bottom Nav */
+        .nav-bar { position: fixed; bottom: 0; width: 100%; background: var(--card); border-top: 1px solid var(--border); display: flex; justify-content: space-around; padding: 12px 0; z-index: 100; }
+        .nav-icon { font-size: 1.5rem; cursor: pointer; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div class="card">
-        <h1 class="logo">Xizoa</h1>
-        
-        <div id="login-form">
-            <input type="text" id="l-user" placeholder="Phone number, username, or email">
-            <input type="password" id="l-pass" placeholder="Password">
-            <button class="btn btn-primary" onclick="doLogin()">Log in</button>
-            
-            <div class="divider">OR</div>
-            
-            <a href="https://api.xizoa.com/auth/github" class="btn social-btn">Log in with GitHub</a>
-            <a href="https://api.xizoa.com/auth/google" class="btn social-btn">Log in with Google</a>
-            
-            <p style="margin-top: 20px; font-size: 0.9rem;">
-                Don't have an account? <span class="link" onclick="toggleForm()">Sign up</span>
-            </p>
-        </div>
-
-        <div id="signup-form" class="hidden">
-            <p style="color:#8e8e8e; margin-bottom:15px;">Sign up to see photos from your friends.</p>
-            <input type="text" id="s-email" placeholder="Mobile Number or Email">
-            <input type="text" id="s-name" placeholder="Full Name">
-            <input type="text" id="s-user" placeholder="Username">
-            <input type="password" id="s-pass" placeholder="Password">
-            
-            <button class="btn btn-primary" onclick="doRegister()">Sign up</button>
-            
-            <p style="margin-top: 20px; font-size: 0.9rem;">
-                Have an account? <span class="link" onclick="toggleForm()">Log in</span>
-            </p>
-        </div>
-
-        <div id="profile-view" class="hidden">
-            <h2>Welcome!</h2>
-            <h3 id="u-name"></h3>
-            <button class="btn" onclick="logout()" style="color:red; background:none;">Log Out</button>
+    <div id="auth-view" class="auth-container">
+        <div class="auth-card">
+            <h1 class="logo">Xizoa</h1>
+            <div id="login-box">
+                <input type="text" id="l-user" placeholder="Username, email, or phone">
+                <input type="password" id="l-pass" placeholder="Password">
+                <button class="btn" onclick="doLogin()">Log in</button>
+                <p style="margin-top:20px; font-size:0.9rem;">Don't have an account? <span style="color:var(--btn); cursor:pointer;" onclick="toggleAuth()">Sign up</span></p>
+            </div>
+            <div id="signup-box" class="hidden">
+                <input type="text" id="s-email" placeholder="Email or Phone">
+                <input type="text" id="s-name" placeholder="Full Name">
+                <input type="text" id="s-user" placeholder="Username">
+                <input type="password" id="s-pass" placeholder="Password">
+                <button class="btn" onclick="doRegister()">Sign up</button>
+                <p style="margin-top:20px; font-size:0.9rem;">Have an account? <span style="color:var(--btn); cursor:pointer;" onclick="toggleAuth()">Log in</span></p>
+            </div>
         </div>
     </div>
-</div>
 
-<script>
-    const API = 'https://api.xizoa.com';
-
-    function toggleForm() {
-        document.getElementById('login-form').classList.toggle('hidden');
-        document.getElementById('signup-form').classList.toggle('hidden');
-    }
-
-    async function doRegister() {
-        const emailOrPhone = document.getElementById('s-email').value;
-        const username = document.getElementById('s-user').value;
-        const password = document.getElementById('s-pass').value;
+    <div id="app-view" class="hidden">
         
-        // Simple check: Is it email or phone?
-        let payload = { username, password, name: document.getElementById('s-name').value };
-        if (emailOrPhone.includes('@')) payload.email = emailOrPhone;
-        else payload.phone = emailOrPhone;
+        <div id="tab-home" class="container">
+            <h1 class="logo" style="font-size: 2rem; padding-left: 10px;">Xizoa</h1>
+            <div id="feed-container">
+                <div style="text-align:center; margin-top:50px; color:#8e8e8e;">Loading posts...</div>
+            </div>
+        </div>
 
-        try {
-            const res = await fetch(`${API}/auth/register`, {
-                method: 'POST', headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(payload)
-            });
-            const data = await res.json();
-            if (data.error) alert(data.error);
-            else {
-                alert('Account Created! Please Login.');
-                toggleForm();
-            }
-        } catch(e) { alert('Error connecting to server'); }
-    }
+        <div id="tab-create" class="container hidden">
+            <div class="create-form auth-card" style="margin: 50px auto;">
+                <h2>New Post</h2>
+                <input type="text" id="p-img" placeholder="Paste Image URL here (https://...)" style="margin-top:20px;">
+                <input type="text" id="p-cap" placeholder="Write a caption...">
+                <button class="btn" onclick="createPost()">Share</button>
+                <p style="font-size:0.8rem; color:#8e8e8e; margin-top:10px;">Note: Currently supports Image Links only.</p>
+            </div>
+        </div>
 
-    async function doLogin() {
-        const login_id = document.getElementById('l-user').value;
-        const password = document.getElementById('l-pass').value;
+        <div id="tab-profile" class="container hidden">
+            <div class="auth-card" style="margin: 50px auto;">
+                <img id="my-av" class="avatar" style="width:80px; height:80px; margin:0 auto 10px;" src="">
+                <h2 id="my-name"></h2>
+                <button class="btn" style="background:none; color:red; border:1px solid #dbdbdb;" onclick="logout()">Log Out</button>
+            </div>
+        </div>
 
-        try {
-            const res = await fetch(`${API}/auth/login`, {
-                method: 'POST', headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ login_id, password })
-            });
-            const data = await res.json();
-            
-            if (data.success) {
-                location.reload(); // Refresh to load profile
-            } else {
-                alert(data.error || 'Login Failed');
-            }
-        } catch(e) { alert('Error connecting'); }
-    }
-    
-    // Check Session (Same as before)
-    fetch(`${API}/me`, {credentials: 'include'}).then(r=>r.json()).then(d=>{
-        if(d.authenticated) {
-            document.getElementById('login-form').classList.add('hidden');
-            document.getElementById('signup-form').classList.add('hidden');
-            document.getElementById('profile-view').classList.remove('hidden');
-            document.getElementById('u-name').innerText = d.user.username || d.user.name;
+        <div class="nav-bar">
+            <div class="nav-icon" onclick="switchTab('home')">🏠</div>
+            <div class="nav-icon" onclick="switchTab('create')">➕</div>
+            <div class="nav-icon" onclick="switchTab('profile')">👤</div>
+        </div>
+    </div>
+
+    <script>
+        const API = 'https://api.xizoa.com';
+
+        // --- AUTH LOGIC ---
+        function toggleAuth() { document.getElementById('login-box').classList.toggle('hidden'); document.getElementById('signup-box').classList.toggle('hidden'); }
+        
+        async function doRegister() {
+            // Same register logic as before
+            const payload = { username: document.getElementById('s-user').value, password: document.getElementById('s-pass').value, name: document.getElementById('s-name').value, email: document.getElementById('s-email').value };
+            if(!payload.email.includes('@')) { payload.phone = payload.email; delete payload.email; }
+            await fetch(`${API}/auth/register`, { method: 'POST', body: JSON.stringify(payload) });
+            alert('Created! Login now.'); toggleAuth();
         }
-    });
 
-    function logout() {
-        document.cookie = "xizoa_session=; domain=.xizoa.com; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;";
-        window.location.reload();
-    }
-</script>
+        async function doLogin() {
+            const res = await fetch(`${API}/auth/login`, { method: 'POST', credentials: 'include', body: JSON.stringify({ login_id: document.getElementById('l-user').value, password: document.getElementById('l-pass').value }) });
+            const data = await res.json();
+            if(data.success) { location.reload(); } else { alert('Failed: ' + data.error); }
+        }
+
+        // --- APP LOGIC ---
+        async function checkUser() {
+            try {
+                const res = await fetch(`${API}/me`, { credentials: 'include' });
+                const data = await res.json();
+                if(data.authenticated) {
+                    document.getElementById('auth-view').classList.add('hidden');
+                    document.getElementById('app-view').classList.remove('hidden');
+                    document.getElementById('my-name').innerText = data.user.username;
+                    document.getElementById('my-av').src = data.user.avatar_url || 'https://ui-avatars.com/api/?name='+data.user.name;
+                    loadFeed();
+                }
+            } catch(e) {}
+        }
+
+        function switchTab(tab) {
+            ['home', 'create', 'profile'].forEach(t => document.getElementById('tab-'+t).classList.add('hidden'));
+            document.getElementById('tab-'+tab).classList.remove('hidden');
+            if(tab === 'home') loadFeed();
+        }
+
+        // --- POST LOGIC ---
+        async function createPost() {
+            const imageUrl = document.getElementById('p-img').value;
+            const caption = document.getElementById('p-cap').value;
+            if(!imageUrl) return alert("Image URL needed!");
+
+            const res = await fetch(`${API}/posts/create`, {
+                method: 'POST', credentials: 'include',
+                body: JSON.stringify({ imageUrl, caption })
+            });
+            
+            if(res.ok) {
+                alert("Posted!");
+                document.getElementById('p-img').value = "";
+                document.getElementById('p-cap').value = "";
+                switchTab('home');
+            } else { alert("Failed to post"); }
+        }
+
+        async function loadFeed() {
+            const res = await fetch(`${API}/feed`, { credentials: 'include' });
+            const posts = await res.json();
+            const container = document.getElementById('feed-container');
+            container.innerHTML = "";
+            
+            posts.forEach(post => {
+                const html = `
+                <div class="post">
+                    <div class="post-header">
+                        <img src="${post.avatar_url || 'https://ui-avatars.com/api/?name=User'}" class="avatar">
+                        <strong>${post.username}</strong>
+                    </div>
+                    <img src="${post.image_url}" class="post-img">
+                    <div class="post-footer">
+                        <p class="caption"><strong>${post.username}</strong> ${post.caption}</p>
+                    </div>
+                </div>`;
+                container.innerHTML += html;
+            });
+        }
+
+        function logout() { document.cookie = "xizoa_session=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;"; window.location.reload(); }
+
+        checkUser();
+    </script>
 </body>
 </html>
