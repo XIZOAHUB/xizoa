@@ -6,101 +6,130 @@
     <title>XIZOA</title>
     <link href="https://fonts.googleapis.com/css2?family=Grand+Hotel&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        /* Instagram-like Clean CSS */
         :root { --bg: #fafafa; --card: #fff; --text: #262626; --btn: #0095f6; --border: #dbdbdb; }
         [data-theme="dark"] { --bg: #000; --card: #000; --text: #f5f5f5; --btn: #0095f6; --border: #363636; }
-        
         body { background: var(--bg); color: var(--text); font-family: -apple-system, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
         .container { width: 100%; max-width: 350px; padding: 20px; }
-        .card { background: var(--card); border: 1px solid var(--border); padding: 40px 20px; text-align: center; margin-bottom: 10px; }
-        .logo { font-family: 'Grand Hotel', cursive; font-size: 3rem; margin-bottom: 30px; cursor: pointer; }
-        
-        .btn { display: block; width: 100%; padding: 8px; border-radius: 8px; font-weight: 600; text-decoration: none; margin-bottom: 10px; border: 1px solid transparent; cursor: pointer; }
+        .card { background: var(--card); border: 1px solid var(--border); padding: 30px; text-align: center; margin-bottom: 10px; }
+        .logo { font-family: 'Grand Hotel', cursive; font-size: 3rem; margin-bottom: 20px; }
+        input { width: 100%; padding: 10px; margin-bottom: 8px; border: 1px solid var(--border); border-radius: 4px; background: var(--bg); color: var(--text); }
+        .btn { display: block; width: 100%; padding: 8px; border-radius: 8px; font-weight: 600; cursor: pointer; border: none; margin-top: 10px; }
         .btn-primary { background: var(--btn); color: white; }
-        .btn-dark { background: #24292f; color: white; }
-        .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
-        
-        .profile-pic { width: 100px; height: 100px; border-radius: 50%; margin-bottom: 15px; border: 1px solid var(--border); }
+        .divider { display: flex; align-items: center; margin: 20px 0; color: #8e8e8e; font-size: 0.8rem; font-weight: 600; }
+        .divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: var(--border); }
         .hidden { display: none !important; }
-        .error { color: red; font-size: 0.8rem; margin-top: 10px; }
+        .link { color: var(--btn); font-weight: 600; cursor: pointer; }
+        .social-btn { margin-bottom: 10px; background: transparent; border: 1px solid var(--border); color: var(--text); }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <div class="card">
-            <h1 class="logo" onclick="location.reload()">Xizoa</h1>
+<div class="container">
+    <div class="card">
+        <h1 class="logo">Xizoa</h1>
+        
+        <div id="login-form">
+            <input type="text" id="l-user" placeholder="Phone number, username, or email">
+            <input type="password" id="l-pass" placeholder="Password">
+            <button class="btn btn-primary" onclick="doLogin()">Log in</button>
             
-            <div id="loading">Loading...</div>
+            <div class="divider">OR</div>
+            
+            <a href="https://api.xizoa.com/auth/github" class="btn social-btn">Log in with GitHub</a>
+            <a href="https://api.xizoa.com/auth/google" class="btn social-btn">Log in with Google</a>
+            
+            <p style="margin-top: 20px; font-size: 0.9rem;">
+                Don't have an account? <span class="link" onclick="toggleForm()">Sign up</span>
+            </p>
+        </div>
 
-            <div id="login-view" class="hidden">
-                <p style="color:#8e8e8e; margin-bottom:20px;">Sign up to verify integration.</p>
-                <a href="https://api.xizoa.com/auth/github" class="btn btn-dark">Log in with GitHub</a>
-                <a href="#" class="btn btn-outline" onclick="alert('Google login coming soon!')">Log in with Google</a>
-                <div id="error-msg" class="error"></div>
-            </div>
+        <div id="signup-form" class="hidden">
+            <p style="color:#8e8e8e; margin-bottom:15px;">Sign up to see photos from your friends.</p>
+            <input type="text" id="s-email" placeholder="Mobile Number or Email">
+            <input type="text" id="s-name" placeholder="Full Name">
+            <input type="text" id="s-user" placeholder="Username">
+            <input type="password" id="s-pass" placeholder="Password">
+            
+            <button class="btn btn-primary" onclick="doRegister()">Sign up</button>
+            
+            <p style="margin-top: 20px; font-size: 0.9rem;">
+                Have an account? <span class="link" onclick="toggleForm()">Log in</span>
+            </p>
+        </div>
 
-            <div id="profile-view" class="hidden">
-                <img id="u-img" class="profile-pic" src="">
-                <h2 id="u-name" style="font-weight:300;"></h2>
-                <p id="u-login" style="font-weight:600; margin-bottom:20px;"></p>
-                <button class="btn btn-primary">Open App</button>
-                <button class="btn" style="color:red; background:none;" onclick="logout()">Log Out</button>
-            </div>
+        <div id="profile-view" class="hidden">
+            <h2>Welcome!</h2>
+            <h3 id="u-name"></h3>
+            <button class="btn" onclick="logout()" style="color:red; background:none;">Log Out</button>
         </div>
     </div>
+</div>
 
-    <script>
-        // ⚠️ DOMAINS CONFIGURATION
-        const API_URL = 'https://api.xizoa.com';
+<script>
+    const API = 'https://api.xizoa.com';
 
-        // 1. Check if User is Logged In
-        async function checkUser() {
-            try {
-                // 'credentials: include' is CRITICAL for cookies to work across domains
-                const res = await fetch(`${API_URL}/me`, { method: 'GET', credentials: 'include' });
-                
-                if (res.ok) {
-                    const data = await res.json();
-                    if (data.authenticated) {
-                        showProfile(data.user);
-                    } else {
-                        showLogin();
-                    }
-                } else {
-                    showLogin();
-                }
-            } catch (err) {
-                console.error(err);
-                showLogin();
-                document.getElementById('error-msg').innerText = "⚠️ API Connection Failed. Check Console.";
+    function toggleForm() {
+        document.getElementById('login-form').classList.toggle('hidden');
+        document.getElementById('signup-form').classList.toggle('hidden');
+    }
+
+    async function doRegister() {
+        const emailOrPhone = document.getElementById('s-email').value;
+        const username = document.getElementById('s-user').value;
+        const password = document.getElementById('s-pass').value;
+        
+        // Simple check: Is it email or phone?
+        let payload = { username, password, name: document.getElementById('s-name').value };
+        if (emailOrPhone.includes('@')) payload.email = emailOrPhone;
+        else payload.phone = emailOrPhone;
+
+        try {
+            const res = await fetch(`${API}/auth/register`, {
+                method: 'POST', headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+            if (data.error) alert(data.error);
+            else {
+                alert('Account Created! Please Login.');
+                toggleForm();
             }
-        }
+        } catch(e) { alert('Error connecting to server'); }
+    }
 
-        // 2. UI Helpers
-        function showLogin() {
-            document.getElementById('loading').classList.add('hidden');
-            document.getElementById('login-view').classList.remove('hidden');
-        }
+    async function doLogin() {
+        const login_id = document.getElementById('l-user').value;
+        const password = document.getElementById('l-pass').value;
 
-        function showProfile(user) {
-            document.getElementById('loading').classList.add('hidden');
-            document.getElementById('profile-view').classList.remove('hidden');
+        try {
+            const res = await fetch(`${API}/auth/login`, {
+                method: 'POST', headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ login_id, password })
+            });
+            const data = await res.json();
             
-            document.getElementById('u-name').innerText = user.name || 'User';
-            document.getElementById('u-login').innerText = '@' + user.login;
-            document.getElementById('u-img').src = user.avatar_url || 'https://ui-avatars.com/api/?name=User';
+            if (data.success) {
+                location.reload(); // Refresh to load profile
+            } else {
+                alert(data.error || 'Login Failed');
+            }
+        } catch(e) { alert('Error connecting'); }
+    }
+    
+    // Check Session (Same as before)
+    fetch(`${API}/me`, {credentials: 'include'}).then(r=>r.json()).then(d=>{
+        if(d.authenticated) {
+            document.getElementById('login-form').classList.add('hidden');
+            document.getElementById('signup-form').classList.add('hidden');
+            document.getElementById('profile-view').classList.remove('hidden');
+            document.getElementById('u-name').innerText = d.user.username || d.user.name;
         }
+    });
 
-        // 3. Logout
-        function logout() {
-            // Clear cookie by setting past date
-            document.cookie = "xizoa_session=; domain=.xizoa.com; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;";
-            window.location.reload();
-        }
-
-        // Start
-        checkUser();
-    </script>
+    function logout() {
+        document.cookie = "xizoa_session=; domain=.xizoa.com; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;";
+        window.location.reload();
+    }
+</script>
 </body>
 </html>
