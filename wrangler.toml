@@ -2,16 +2,19 @@ name = "xizoa-api"
 main = "src/index.js"
 compatibility_date = "2024-12-12"
 
-# Cloudflare Dashboard के URL में देखिए, वहां account_id मिल जाएगा
-account_id = "APNA_ACCOUNT_ID_YAHAN_DAALEIN"
+# ✅ आपकी ID यहाँ डाल दी गई है
+account_id = "4ab2ec221eb0631878fd0d13697a9fc5"
+
+# Development मोड
 workers_dev = true
 
-# Database Connection (ID maine aapke screenshot se le li hai)
+# Database Connection (ID आपके स्क्रीनशॉट से ली गई है)
 [[d1_databases]]
 binding = "DB"
 database_name = "xizoa_d1"
 database_id = "7e9daa64-7d20-4100-87bc-52080f3607c8"
 
+# Public Variables (कस्टम डोमेन)
 [vars]
-API_URL = "https://xizoa-api.priyanshumaurya758.workers.dev"
+API_URL = "https://api.xizoa.com"
 APP_URL = "https://app.xizoa.com"
