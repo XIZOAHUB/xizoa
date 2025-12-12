@@ -1,82 +1,75 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>XIZOAHUB — Community App</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
-            background: #0a0f1a;
-            color: #fff;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-
-        header {
-            padding: 20px;
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(0, 247, 255, 0.3);
-            text-align: center;
-        }
-
-        h1 {
-            margin: 0;
-            font-size: 28px;
-            color: #00f7ff;
-        }
-
-        .container {
-            flex: 1;
-            padding: 20px;
-            text-align: center;
-        }
-
-        a.btn {
-            display: inline-block;
-            margin-top: 20px;
-            padding: 12px 22px;
-            background: #00f7ff;
-            color: #000;
-            font-weight: bold;
-            border-radius: 8px;
-            text-decoration: none;
-            transition: 0.2s;
-        }
-
-        a.btn:hover {
-            opacity: 0.8;
-        }
-
-        footer {
-            padding: 15px;
-            text-align: center;
-            background: rgba(255, 255, 255, 0.05);
-            border-top: 1px solid rgba(0, 247, 255, 0.3);
-            color: #aaa;
-        }
-    </style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>XIZOAHUB App</title>
+  <style>
+    body{font-family:Arial,Helvetica,sans-serif;background:#0a0f1a;color:#fff;display:flex;flex-direction:column;min-height:100vh}
+    header{padding:20px;text-align:center;color:#00f7ff}
+    .card{max-width:720px;margin:40px auto;padding:24px;background:rgba(255,255,255,0.03);border-radius:12px}
+    .btn{display:inline-block;padding:10px 16px;border-radius:8px;background:#00f7ff;color:#000;font-weight:700;text-decoration:none}
+    img.avatar{width:48px;height:48px;border-radius:50%;vertical-align:middle;margin-right:12px}
+  </style>
 </head>
 <body>
+  <header><h1>XIZOAHUB — Community</h1></header>
+  <main class="card">
+    <div id="not-logged">
+      <p>You are not logged in.</p>
+      <a class="btn" id="loginBtn" href="https://api.xizoa.com/auth/github">Login with GitHub</a>
+    </div>
 
-<header>
-    <h1>XIZOAHUB Community</h1>
-</header>
+    <div id="logged" style="display:none;">
+      <p>Welcome, <span id="userName"></span></p>
+      <p><img id="userAvatar" class="avatar" src="" alt="avatar"><span id="userLogin"></span></p>
+      <button id="refreshBtn" class="btn">Refresh profile</button>
+    </div>
+  </main>
 
-<div class="container">
-    <p>Welcome! Your new Cloudflare Pages setup is ready.</p>
-    <p>Ab tum is UI ke andar login system, chat, groups, pages sab add kar sakte ho.</p>
+  <script>
+    const API = 'https://api.xizoa.com';
 
-    <a href="#" class="btn">Explore</a>
-</div>
+    async function fetchMe() {
+      try {
+        const res = await fetch(API + '/me', {
+          method: 'GET',
+          credentials: 'include' // important to send cookie
+        });
+        if (!res.ok) {
+          console.log('Not authenticated', res.status);
+          showLogged(false);
+          return;
+        }
+        const data = await res.json();
+        if (data.authenticated) {
+          showUser(data.user);
+        } else {
+          showLogged(false);
+        }
+      } catch (err) {
+        console.error('Fetch /me error', err);
+        showLogged(false);
+      }
+    }
 
-<footer>
-    © 2025 XIZOAHUB — All rights reserved.
-</footer>
+    function showUser(user) {
+      document.getElementById('not-logged').style.display = 'none';
+      document.getElementById('logged').style.display = 'block';
+      document.getElementById('userName').textContent = user.name || user.login || 'User';
+      document.getElementById('userLogin').textContent = user.login;
+      document.getElementById('userAvatar').src = user.avatar_url || 'https://via.placeholder.com/48';
+    }
 
+    function showLogged(show) {
+      document.getElementById('not-logged').style.display = show ? 'none' : 'block';
+      document.getElementById('logged').style.display = show ? 'block' : 'none';
+    }
+
+    document.getElementById('refreshBtn').addEventListener('click', fetchMe);
+
+    // on load attempt to fetch profile. If cookie present and valid, /me will return user.
+    fetchMe();
+  </script>
 </body>
 </html>
