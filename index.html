@@ -5,81 +5,209 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Xizoa</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Grand+Hotel&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-
 <style>
 :root{
-  --bg:#fafafa;--card:#fff;--text:#262626;
-  --muted:#8e8e8e;--btn:#0095f6;--border:#dbdbdb;
+  --bg:#0b0f14;
+  --card:#111827;
+  --border:#1f2937;
+  --text:#e5e7eb;
+  --muted:#9ca3af;
+  --brand:#3b82f6;
 }
+
 *{box-sizing:border-box}
-body{margin:0;font-family:Inter,sans-serif;background:var(--bg)}
-.hidden{display:none}
-.center{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:16px}
-.card{background:var(--card);border:1px solid var(--border);border-radius:12px;width:100%;max-width:380px;padding:28px}
-.logo{font-family:'Grand Hotel',cursive;font-size:3rem;text-align:center;margin-bottom:20px}
-input,textarea{width:100%;padding:12px;margin-bottom:10px;border-radius:8px;border:1px solid var(--border)}
-.btn{width:100%;padding:10px;border-radius:8px;border:none;background:var(--btn);color:#fff;font-weight:600;cursor:pointer}
-.divider{text-align:center;color:var(--muted);margin:16px 0}
-.social button{width:100%;padding:10px;border-radius:8px;font-weight:600;margin-bottom:8px;border:1px solid var(--border);background:#fff}
-.social .github{background:#24292e;color:#fff;border:none}
-.app{max-width:600px;margin:auto;padding:16px}
-.feed-card{background:#fff;border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:12px}
+body{
+  margin:0;
+  font-family:system-ui,-apple-system,Segoe UI,Roboto;
+  background:var(--bg);
+  color:var(--text);
+}
+
+a{text-decoration:none;color:inherit}
+
+.center{
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+}
+
+.card{
+  width:100%;
+  max-width:420px;
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:28px;
+}
+
+.logo{
+  text-align:center;
+  font-size:2rem;
+  font-weight:700;
+  margin-bottom:6px;
+}
+
+.tagline{
+  text-align:center;
+  color:var(--muted);
+  font-size:.95rem;
+  margin-bottom:24px;
+}
+
+.btn{
+  width:100%;
+  padding:12px;
+  border-radius:10px;
+  border:1px solid var(--border);
+  background:#020617;
+  color:var(--text);
+  font-size:1rem;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+}
+
+.btn.primary{
+  background:var(--brand);
+  border:none;
+}
+
+.btn:hover{opacity:.9}
+
+.sep{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  color:var(--muted);
+  font-size:.85rem;
+  margin:18px 0;
+}
+.sep::before,.sep::after{
+  content:"";
+  flex:1;
+  height:1px;
+  background:var(--border);
+}
+
+.input{
+  width:100%;
+  padding:12px;
+  border-radius:10px;
+  border:1px solid var(--border);
+  background:#020617;
+  color:var(--text);
+  margin-bottom:12px;
+  font-size:.95rem;
+}
+
+.switch{
+  text-align:center;
+  margin-top:16px;
+  font-size:.9rem;
+  color:var(--muted);
+}
+.switch span{
+  color:var(--brand);
+  cursor:pointer;
+}
+
+/* DASHBOARD */
+
+.app{
+  display:none;
+}
+
+.nav{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:14px 20px;
+  border-bottom:1px solid var(--border);
+}
+
+.feed{
+  padding:20px;
+  color:var(--muted);
+}
 </style>
 </head>
 
 <body>
 
-<div id="auth" class="center">
+<!-- AUTH -->
+<div class="center" id="auth">
   <div class="card">
     <div class="logo">Xizoa</div>
+    <div class="tagline">Share thoughts. Not noise.</div>
 
-    <input id="lUser" placeholder="Username">
-    <input id="lPass" type="password" placeholder="Password">
-    <button class="btn" onclick="login()">Log in</button>
+    <button class="btn" onclick="oauth('google')">
+      <img src="https://www.svgrepo.com/show/475656/google-color.svg" width="18">
+      Continue with Google
+    </button>
 
-    <div class="divider">OR</div>
+    <button class="btn" style="margin-top:10px" onclick="oauth('github')">
+      <img src="https://www.svgrepo.com/show/512317/github-142.svg" width="18">
+      Continue with GitHub
+    </button>
 
-    <div class="social">
-      <button onclick="location.href=API+'/auth/google'">Continue with Google</button>
-      <button class="github" onclick="location.href=API+'/auth/github'">Continue with GitHub</button>
+    <div class="sep">or</div>
+
+    <input class="input" placeholder="Email or phone (coming soon)" disabled>
+    <input class="input" placeholder="Password (coming soon)" disabled>
+
+    <button class="btn primary" disabled>
+      Sign in (OTP coming soon)
+    </button>
+
+    <div class="switch">
+      New here? <span>Account auto-creates on OAuth</span>
     </div>
   </div>
 </div>
 
-<div id="app" class="hidden app">
-  <textarea id="postText" placeholder="Write something…"></textarea>
-  <button class="btn" onclick="post()">Post</button>
-  <div id="feed"></div>
+<!-- APP -->
+<div class="app" id="app">
+  <div class="nav">
+    <strong>Xizoa</strong>
+    <span style="color:#ef4444;cursor:pointer" onclick="logout()">Logout</span>
+  </div>
+
+  <div class="feed">
+    <h3>Welcome 👋</h3>
+    <p>
+      This is your clean space.<br>
+      No reels. No algorithm drama.<br>
+      Just posts, quotes & conversations.
+    </p>
+
+    <p style="margin-top:20px;color:#6b7280">
+      Feed · Profile · Messages — coming next
+    </p>
+  </div>
 </div>
 
 <script>
-const API = "https://api.xizoa.com"; // YOUR WORKER DOMAIN
-let me=null;
+const API = "https://api.xizoa.com";
 
-async function login(){
-  const r = await fetch(API+"/auth/login",{method:"POST",headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({username:lUser.value.trim(),password:lPass.value.trim()})});
-  const d = await r.json();
-  if(!d.success) return alert("Login failed");
-  me=d.user;
-  auth.classList.add("hidden");
-  app.classList.remove("hidden");
-  load();
+function oauth(provider){
+  window.location.href = API + "/auth/" + provider;
 }
 
-async function post(){
-  await fetch(API+"/posts/create",{method:"POST",headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({user_id:me.id,content:postText.value})});
-  postText.value="";
-  load();
+/* TEMP SESSION CHECK
+   OAuth callback abhi JSON deta hai.
+   Later yahan JWT check hoga.
+*/
+if(location.search.includes("code=")){
+  document.getElementById("auth").style.display="none";
+  document.getElementById("app").style.display="block";
 }
 
-async function load(){
-  const r = await fetch(API+"/feed");
-  const data = await r.json();
-  feed.innerHTML="";
-  data.forEach(p=>feed.innerHTML+=`<div class="feed-card"><b>${p.username}</b><br>${p.content}</div>`);
+function logout(){
+  location.href="/";
 }
 </script>
 
