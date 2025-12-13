@@ -6,206 +6,278 @@
 <title>Xizoa</title>
 
 <style>
-:root{
-  --bg:#0b0f14;
-  --card:#111827;
-  --border:#1f2937;
-  --text:#e5e7eb;
-  --muted:#9ca3af;
-  --brand:#3b82f6;
-}
-
-*{box-sizing:border-box}
+/* ====== RESET ====== */
+*{box-sizing:border-box;margin:0;padding:0}
 body{
-  margin:0;
   font-family:system-ui,-apple-system,Segoe UI,Roboto;
-  background:var(--bg);
-  color:var(--text);
+  background:#fafafa;
+  color:#262626;
 }
 
-a{text-decoration:none;color:inherit}
-
-.center{
+/* ====== AUTH LAYOUT ====== */
+.auth-layout{
   min-height:100vh;
+  display:flex;
+}
+.auth-left{
+  flex:1;
+  background:#000;
+  color:#fff;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:60px;
+}
+.auth-left h1{font-size:3rem}
+.auth-left p{opacity:.8;margin-top:12px}
+
+.auth-right{
+  flex:1;
   display:flex;
   align-items:center;
   justify-content:center;
-  padding:20px;
 }
 
-.card{
+.auth-card{
   width:100%;
-  max-width:420px;
-  background:var(--card);
-  border:1px solid var(--border);
-  border-radius:16px;
-  padding:28px;
+  max-width:360px;
+  background:#fff;
+  border:1px solid #dbdbdb;
+  padding:32px;
+  text-align:center;
 }
 
 .logo{
-  text-align:center;
-  font-size:2rem;
-  font-weight:700;
-  margin-bottom:6px;
-}
-
-.tagline{
-  text-align:center;
-  color:var(--muted);
-  font-size:.95rem;
-  margin-bottom:24px;
+  font-family:cursive;
+  font-size:3rem;
+  margin-bottom:20px;
 }
 
 .btn{
   width:100%;
-  padding:12px;
-  border-radius:10px;
-  border:1px solid var(--border);
-  background:#020617;
-  color:var(--text);
-  font-size:1rem;
+  padding:10px;
+  border-radius:8px;
+  border:1px solid #dbdbdb;
+  background:#fff;
   cursor:pointer;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:10px;
-}
-
-.btn.primary{
-  background:var(--brand);
-  border:none;
-}
-
-.btn:hover{opacity:.9}
-
-.sep{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  color:var(--muted);
-  font-size:.85rem;
-  margin:18px 0;
-}
-.sep::before,.sep::after{
-  content:"";
-  flex:1;
-  height:1px;
-  background:var(--border);
-}
-
-.input{
-  width:100%;
-  padding:12px;
-  border-radius:10px;
-  border:1px solid var(--border);
-  background:#020617;
-  color:var(--text);
-  margin-bottom:12px;
+  margin-bottom:10px;
   font-size:.95rem;
 }
 
-.switch{
-  text-align:center;
-  margin-top:16px;
-  font-size:.9rem;
-  color:var(--muted);
-}
-.switch span{
-  color:var(--brand);
-  cursor:pointer;
+.btn.primary{
+  background:#0095f6;
+  color:#fff;
+  border:none;
 }
 
-/* DASHBOARD */
-
-.app{
-  display:none;
+.sep{
+  margin:14px 0;
+  font-size:.85rem;
+  color:#8e8e8e;
 }
+
+@media(min-width:900px){
+  .auth-left{display:flex}
+}
+
+/* ====== APP LAYOUT ====== */
+.app{display:none}
 
 .nav{
+  height:54px;
+  border-bottom:1px solid #dbdbdb;
+  background:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  position:sticky;
+  top:0;
+  z-index:10;
+}
+
+.nav-inner{
+  width:100%;
+  max-width:935px;
   display:flex;
   justify-content:space-between;
   align-items:center;
-  padding:14px 20px;
-  border-bottom:1px solid var(--border);
+  padding:0 16px;
+}
+
+.container{
+  display:flex;
+  justify-content:center;
+  margin-top:20px;
 }
 
 .feed{
-  padding:20px;
-  color:var(--muted);
+  width:100%;
+  max-width:470px;
+}
+
+.post{
+  background:#fff;
+  border:1px solid #dbdbdb;
+  margin-bottom:20px;
+}
+
+.post-header{
+  padding:12px;
+  font-weight:600;
+}
+
+.post-content{
+  padding:12px;
+  font-size:.95rem;
+}
+
+.quote{
+  font-style:italic;
+  margin-top:6px;
+  color:#555;
+}
+
+/* ====== CREATE POST ====== */
+.create-box{
+  background:#fff;
+  border:1px solid #dbdbdb;
+  padding:12px;
+  margin-bottom:20px;
+}
+
+textarea{
+  width:100%;
+  resize:none;
+  border:1px solid #dbdbdb;
+  padding:10px;
+  border-radius:6px;
+  font-family:inherit;
+  font-size:.95rem;
+  margin-bottom:8px;
+}
+
+/* ====== BOTTOM NAV (MOBILE) ====== */
+.bottom-nav{
+  display:flex;
+  justify-content:space-around;
+  border-top:1px solid #dbdbdb;
+  background:#fff;
+  position:fixed;
+  bottom:0;
+  width:100%;
+  height:50px;
+}
+
+.bottom-nav span{
+  line-height:50px;
+  cursor:pointer;
+}
+
+@media(min-width:900px){
+  .bottom-nav{display:none}
 }
 </style>
 </head>
 
 <body>
 
-<!-- AUTH -->
-<div class="center" id="auth">
-  <div class="card">
-    <div class="logo">Xizoa</div>
-    <div class="tagline">Share thoughts. Not noise.</div>
+<!-- ================= AUTH ================= -->
+<div class="auth-layout" id="auth">
+  <div class="auth-left">
+    <div>
+      <h1>Xizoa</h1>
+      <p>No reels. No noise.<br>Just posts, quotes & conversations.</p>
+    </div>
+  </div>
 
-    <button class="btn" onclick="oauth('google')">
-      <img src="https://www.svgrepo.com/show/475656/google-color.svg" width="18">
-      Continue with Google
-    </button>
+  <div class="auth-right">
+    <div class="auth-card">
+      <div class="logo">Xizoa</div>
 
-    <button class="btn" style="margin-top:10px" onclick="oauth('github')">
-      <img src="https://www.svgrepo.com/show/512317/github-142.svg" width="18">
-      Continue with GitHub
-    </button>
+      <button class="btn primary" onclick="oauth('google')">
+        Continue with Google
+      </button>
 
-    <div class="sep">or</div>
+      <button class="btn" onclick="oauth('github')">
+        Continue with GitHub
+      </button>
 
-    <input class="input" placeholder="Email or phone (coming soon)" disabled>
-    <input class="input" placeholder="Password (coming soon)" disabled>
-
-    <button class="btn primary" disabled>
-      Sign in (OTP coming soon)
-    </button>
-
-    <div class="switch">
-      New here? <span>Account auto-creates on OAuth</span>
+      <div class="sep">No password. Account auto-creates.</div>
     </div>
   </div>
 </div>
 
-<!-- APP -->
+<!-- ================= APP ================= -->
 <div class="app" id="app">
+
   <div class="nav">
-    <strong>Xizoa</strong>
-    <span style="color:#ef4444;cursor:pointer" onclick="logout()">Logout</span>
+    <div class="nav-inner">
+      <strong>Xizoa</strong>
+      <span style="cursor:pointer;color:#0095f6" onclick="logout()">Logout</span>
+    </div>
   </div>
 
-  <div class="feed">
-    <h3>Welcome 👋</h3>
-    <p>
-      This is your clean space.<br>
-      No reels. No algorithm drama.<br>
-      Just posts, quotes & conversations.
-    </p>
+  <div class="container">
+    <div class="feed">
 
-    <p style="margin-top:20px;color:#6b7280">
-      Feed · Profile · Messages — coming next
-    </p>
+      <!-- CREATE POST -->
+      <div class="create-box">
+        <textarea id="postText" rows="3" placeholder="Write a post…"></textarea>
+        <textarea id="quoteText" rows="2" placeholder="Optional quote…"></textarea>
+        <button class="btn primary" onclick="addPost()">Post</button>
+      </div>
+
+      <!-- POSTS -->
+      <div id="posts"></div>
+
+    </div>
+  </div>
+
+  <div class="bottom-nav">
+    <span>🏠</span>
+    <span>➕</span>
+    <span>👤</span>
   </div>
 </div>
 
 <script>
 const API = "https://api.xizoa.com";
 
-function oauth(provider){
-  window.location.href = API + "/auth/" + provider;
+/* ===== OAuth ===== */
+function oauth(p){
+  location.href = API + "/auth/" + p;
 }
 
-/* TEMP SESSION CHECK
-   OAuth callback abhi JSON deta hai.
-   Later yahan JWT check hoga.
-*/
-if(location.search.includes("code=")){
+/* ===== Login detect ===== */
+if(location.search.includes("login=success")){
   document.getElementById("auth").style.display="none";
   document.getElementById("app").style.display="block";
 }
 
+/* ===== Dummy post system ===== */
+const postsDiv = document.getElementById("posts");
+
+function addPost(){
+  const text = postText.value.trim();
+  const quote = quoteText.value.trim();
+  if(!text) return alert("Write something");
+
+  const el = document.createElement("div");
+  el.className="post";
+  el.innerHTML = `
+    <div class="post-header">You</div>
+    <div class="post-content">
+      ${text}
+      ${quote ? `<div class="quote">“${quote}”</div>` : ""}
+    </div>
+  `;
+  postsDiv.prepend(el);
+
+  postText.value="";
+  quoteText.value="";
+}
+
+/* ===== Logout ===== */
 function logout(){
   location.href="/";
 }
