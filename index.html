@@ -1,83 +1,166 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>X</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Xizoa</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Grand+Hotel&display=swap" rel="stylesheet">
 
 <style>
-  body {
-    font-family: system-ui, sans-serif;
-    background: #0a0a0a;
-    color: #fff;
-    margin: 0;
-    padding: 16px;
-  }
-  h2 { margin-top: 0; }
-  input, textarea, button {
-    width: 100%;
-    padding: 10px;
-    margin: 6px 0;
-    border-radius: 6px;
-    border: none;
-  }
-  input, textarea {
-    background: #1a1a1a;
-    color: #fff;
-  }
-  button {
-    background: #00f7ff;
-    color: #000;
-    font-weight: bold;
-    cursor: pointer;
-  }
-  .card {
-    background: #111;
-    padding: 12px;
-    margin-bottom: 10px;
-    border-radius: 8px;
-  }
-  .hidden { display: none; }
+:root {
+  --bg: #fafafa;
+  --card: #fff;
+  --text: #262626;
+  --btn: #0095f6;
+  --border: #dbdbdb;
+}
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  margin: 0;
+}
+.hidden { display: none; }
+
+.auth-container {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.auth-card {
+  width: 350px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  padding: 30px;
+  text-align: center;
+}
+.logo {
+  font-family: 'Grand Hotel', cursive;
+  font-size: 3rem;
+  margin-bottom: 20px;
+}
+input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 8px;
+  border: 1px solid var(--border);
+}
+.btn {
+  width: 100%;
+  padding: 8px;
+  background: var(--btn);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 6px;
+}
+
+/* SOCIAL LOGIN */
+.social-login {
+  margin-top: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.social-btn {
+  padding: 10px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+}
+.social-btn.google {
+  background: #fff;
+  border: 1px solid #dbdbdb;
+}
+.social-btn.github {
+  background: #24292e;
+  color: #fff;
+}
 </style>
 </head>
 
 <body>
 
-<h2>X</h2>
+<div class="auth-container">
+  <div class="auth-card">
 
-<!-- AUTH -->
-<div id="auth">
-  <input id="username" placeholder="username">
-  <input id="password" type="password" placeholder="password">
-  <button onclick="register()">Register</button>
-  <button onclick="login()">Login</button>
-</div>
+    <div class="logo">Xizoa</div>
 
-<!-- APP -->
-<div id="app" class="hidden">
+    <!-- LOGIN -->
+    <div id="loginBox">
+      <input id="loginUser" placeholder="Username">
+      <input id="loginPass" type="password" placeholder="Password">
+      <button class="btn" onclick="login()">Log in</button>
 
-  <textarea id="postContent" placeholder="Write something..."></textarea>
-  <button onclick="createPost()">Post</button>
+      <!-- SOCIAL -->
+      <div class="social-login">
+        <button class="social-btn google" onclick="comingSoon('Google')">
+          Continue with Google
+        </button>
+        <button class="social-btn github" onclick="comingSoon('GitHub')">
+          Continue with GitHub
+        </button>
+      </div>
 
-  <h3>Feed</h3>
-  <div id="feed"></div>
+      <p style="margin-top:15px;font-size:0.9rem;">
+        Don't have an account?
+        <span style="color:#0095f6;cursor:pointer;" onclick="toggleAuth()">Sign up</span>
+      </p>
+    </div>
 
+    <!-- SIGNUP -->
+    <div id="signupBox" class="hidden">
+      <input id="regUser" placeholder="Username">
+      <input id="regPass" type="password" placeholder="Password">
+      <button class="btn" onclick="register()">Sign up</button>
+
+      <!-- SOCIAL -->
+      <div class="social-login">
+        <button class="social-btn google" onclick="comingSoon('Google')">
+          Continue with Google
+        </button>
+        <button class="social-btn github" onclick="comingSoon('GitHub')">
+          Continue with GitHub
+        </button>
+      </div>
+
+      <p style="margin-top:15px;font-size:0.9rem;">
+        Have an account?
+        <span style="color:#0095f6;cursor:pointer;" onclick="toggleAuth()">Log in</span>
+      </p>
+    </div>
+
+  </div>
 </div>
 
 <script>
-const API = "https://api.xizoa.com"; // <-- CHANGE THIS
-let currentUser = null;
+const API = "https://api.xizoa.com"; // CHANGE THIS
+
+function toggleAuth() {
+  loginBox.classList.toggle("hidden");
+  signupBox.classList.toggle("hidden");
+}
+
+function comingSoon(name) {
+  alert(name + " login coming soon 🚧");
+}
 
 async function register() {
-  const res = await fetch(API + "/auth/register", {
+  await fetch(API + "/auth/register", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      username: username.value,
-      password: password.value
+      username: regUser.value,
+      password: regPass.value
     })
   });
-  alert(await res.text());
+  alert("Account created. Login now.");
+  toggleAuth();
 }
 
 async function login() {
@@ -85,42 +168,13 @@ async function login() {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      username: username.value,
-      password: password.value
+      username: loginUser.value,
+      password: loginPass.value
     })
   });
   const data = await res.json();
   if (!data.success) return alert("Login failed");
-
-  currentUser = data.user;
-  auth.classList.add("hidden");
-  app.classList.remove("hidden");
-  loadFeed();
-}
-
-async function createPost() {
-  await fetch(API + "/posts/create", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      user_id: currentUser.id,
-      content: postContent.value
-    })
-  });
-  postContent.value = "";
-  loadFeed();
-}
-
-async function loadFeed() {
-  const res = await fetch(API + "/feed");
-  const posts = await res.json();
-  feed.innerHTML = "";
-  posts.forEach(p => {
-    const div = document.createElement("div");
-    div.className = "card";
-    div.innerHTML = `<b>${p.username}</b><br>${p.content}`;
-    feed.appendChild(div);
-  });
+  alert("Login successful");
 }
 </script>
 
