@@ -51,6 +51,14 @@ body{
   margin-bottom:20px;
 }
 
+input{
+  width:100%;
+  padding:10px;
+  border-radius:6px;
+  border:1px solid #dbdbdb;
+  margin-bottom:10px;
+}
+
 .btn{
   width:100%;
   padding:10px;
@@ -65,6 +73,18 @@ body{
   background:#0095f6;
   color:#fff;
   border:none;
+}
+
+.link{
+  font-size:.85rem;
+  color:#0095f6;
+  cursor:pointer;
+}
+
+.sep{
+  font-size:.85rem;
+  color:#8e8e8e;
+  margin:12px 0;
 }
 
 @media(min-width:900px){
@@ -141,7 +161,7 @@ textarea{
   <div class="left">
     <div>
       <h1>Xizoa</h1>
-      <p>No reels. No noise.<br>Only posts & quotes.</p>
+      <p>No reels. No noise.<br>Only images, captions & quotes.</p>
     </div>
   </div>
 
@@ -149,12 +169,49 @@ textarea{
     <div class="card">
       <div class="logo">Xizoa</div>
 
-      <button class="btn primary" onclick="login('google')">
+      <!-- USERNAME LOGIN -->
+      <input id="username" placeholder="Username">
+      <input id="password" type="password" placeholder="Password">
+
+      <button class="btn primary" onclick="loginUser()">
+        Login
+      </button>
+
+      <div class="sep">OR</div>
+
+      <!-- OAUTH -->
+      <button class="btn" onclick="oauth('google')">
         Continue with Google
       </button>
-      <button class="btn" onclick="login('github')">
+      <button class="btn" onclick="oauth('github')">
         Continue with GitHub
       </button>
+
+      <div class="sep"></div>
+
+      <div class="link" onclick="showSignup()">
+        Forgot username / New user? Create account
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SIGNUP ===== -->
+<div class="auth" id="signup" style="display:none">
+  <div class="right">
+    <div class="card">
+      <div class="logo">Xizoa</div>
+
+      <input placeholder="Choose Username">
+      <input placeholder="Email (optional)">
+      <input type="password" placeholder="Create Password">
+
+      <button class="btn primary">
+        Create Account
+      </button>
+
+      <div class="sep"></div>
+      <div class="link" onclick="backToLogin()">Back to Login</div>
     </div>
   </div>
 </div>
@@ -164,14 +221,15 @@ textarea{
   <div class="nav">
     <div class="nav-inner">
       <strong>Xizoa</strong>
-      <span style="cursor:pointer;color:#0095f6" onclick="logout()">Logout</span>
+      <span class="link" onclick="logout()">Logout</span>
     </div>
   </div>
 
   <div class="feed">
     <div class="create">
-      <textarea id="text" rows="3" placeholder="Write a post…"></textarea>
-      <textarea id="quote" rows="2" placeholder="Optional quote…"></textarea>
+      <textarea id="img" rows="2" placeholder="Paste image URL…"></textarea>
+      <textarea id="cap" rows="2" placeholder="Caption…"></textarea>
+      <textarea id="quo" rows="2" placeholder="Optional quote…"></textarea>
       <button class="btn primary" onclick="addPost()">Post</button>
     </div>
 
@@ -180,32 +238,58 @@ textarea{
 </div>
 
 <script>
-const API = "https://api.xizoa.com";
+const API="https://api.xizoa.com";
 
-function login(p){
-  location.href = API + "/auth/" + p;
+/* OAuth */
+function oauth(p){
+  location.href=API+"/auth/"+p;
 }
 
-if(location.search.includes("login=success")){
+/* Username login (UI only, backend ready) */
+function loginUser(){
+  if(!username.value||!password.value){
+    alert("Enter username & password");
+    return;
+  }
+  // backend add hone par yahin fetch lagega
+  showApp();
+}
+
+/* UI helpers */
+function showSignup(){
   auth.style.display="none";
+  signup.style.display="flex";
+}
+function backToLogin(){
+  signup.style.display="none";
+  auth.style.display="flex";
+}
+
+function showApp(){
+  auth.style.display="none";
+  signup.style.display="none";
   app.style.display="block";
 }
 
-function addPost(){
-  const t=text.value.trim();
-  const q=quote.value.trim();
-  if(!t) return;
+/* OAuth success */
+if(location.search.includes("login=success")){
+  showApp();
+}
 
+/* Dummy post */
+function addPost(){
+  if(!img.value) return;
   const d=document.createElement("div");
   d.className="post";
   d.innerHTML=`
     <div class="post-header">You</div>
     <div class="post-body">
-      ${t}
-      ${q?`<div class="quote">“${q}”</div>`:""}
+      <img src="${img.value}" style="width:100%;border-radius:6px"><br>
+      ${cap.value}<br>
+      ${quo.value?`<div class="quote">“${quo.value}”</div>`:""}
     </div>`;
   posts.prepend(d);
-  text.value=""; quote.value="";
+  img.value=cap.value=quo.value="";
 }
 
 function logout(){
