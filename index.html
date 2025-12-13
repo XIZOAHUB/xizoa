@@ -6,7 +6,6 @@
 <title>Xizoa</title>
 
 <style>
-/* ====== RESET ====== */
 *{box-sizing:border-box;margin:0;padding:0}
 body{
   font-family:system-ui,-apple-system,Segoe UI,Roboto;
@@ -14,36 +13,35 @@ body{
   color:#262626;
 }
 
-/* ====== AUTH LAYOUT ====== */
-.auth-layout{
+/* ===== AUTH ===== */
+.auth{
   min-height:100vh;
   display:flex;
 }
-.auth-left{
+.left{
   flex:1;
   background:#000;
   color:#fff;
   display:none;
   align-items:center;
   justify-content:center;
-  padding:60px;
+  padding:50px;
 }
-.auth-left h1{font-size:3rem}
-.auth-left p{opacity:.8;margin-top:12px}
+.left h1{font-size:3rem}
+.left p{opacity:.8;margin-top:10px}
 
-.auth-right{
+.right{
   flex:1;
   display:flex;
   align-items:center;
   justify-content:center;
 }
 
-.auth-card{
-  width:100%;
-  max-width:360px;
+.card{
+  width:360px;
   background:#fff;
   border:1px solid #dbdbdb;
-  padding:32px;
+  padding:30px;
   text-align:center;
 }
 
@@ -56,31 +54,24 @@ body{
 .btn{
   width:100%;
   padding:10px;
-  border-radius:8px;
-  border:1px solid #dbdbdb;
-  background:#fff;
-  cursor:pointer;
   margin-bottom:10px;
-  font-size:.95rem;
+  border-radius:6px;
+  border:1px solid #dbdbdb;
+  cursor:pointer;
+  background:#fff;
 }
 
-.btn.primary{
+.primary{
   background:#0095f6;
   color:#fff;
   border:none;
 }
 
-.sep{
-  margin:14px 0;
-  font-size:.85rem;
-  color:#8e8e8e;
-}
-
 @media(min-width:900px){
-  .auth-left{display:flex}
+  .left{display:flex}
 }
 
-/* ====== APP LAYOUT ====== */
+/* ===== APP ===== */
 .app{display:none}
 
 .nav{
@@ -88,31 +79,36 @@ body{
   border-bottom:1px solid #dbdbdb;
   background:#fff;
   display:flex;
-  align-items:center;
   justify-content:center;
-  position:sticky;
-  top:0;
-  z-index:10;
 }
 
 .nav-inner{
-  width:100%;
-  max-width:935px;
+  width:935px;
   display:flex;
   justify-content:space-between;
   align-items:center;
   padding:0 16px;
 }
 
-.container{
-  display:flex;
-  justify-content:center;
-  margin-top:20px;
+.feed{
+  max-width:470px;
+  margin:20px auto;
 }
 
-.feed{
+.create{
+  background:#fff;
+  border:1px solid #dbdbdb;
+  padding:12px;
+  margin-bottom:20px;
+}
+
+textarea{
   width:100%;
-  max-width:470px;
+  border:1px solid #dbdbdb;
+  border-radius:6px;
+  padding:8px;
+  margin-bottom:8px;
+  resize:none;
 }
 
 .post{
@@ -122,94 +118,49 @@ body{
 }
 
 .post-header{
-  padding:12px;
+  padding:10px;
   font-weight:600;
 }
 
-.post-content{
-  padding:12px;
-  font-size:.95rem;
+.post-body{
+  padding:10px;
 }
 
 .quote{
   font-style:italic;
-  margin-top:6px;
   color:#555;
-}
-
-/* ====== CREATE POST ====== */
-.create-box{
-  background:#fff;
-  border:1px solid #dbdbdb;
-  padding:12px;
-  margin-bottom:20px;
-}
-
-textarea{
-  width:100%;
-  resize:none;
-  border:1px solid #dbdbdb;
-  padding:10px;
-  border-radius:6px;
-  font-family:inherit;
-  font-size:.95rem;
-  margin-bottom:8px;
-}
-
-/* ====== BOTTOM NAV (MOBILE) ====== */
-.bottom-nav{
-  display:flex;
-  justify-content:space-around;
-  border-top:1px solid #dbdbdb;
-  background:#fff;
-  position:fixed;
-  bottom:0;
-  width:100%;
-  height:50px;
-}
-
-.bottom-nav span{
-  line-height:50px;
-  cursor:pointer;
-}
-
-@media(min-width:900px){
-  .bottom-nav{display:none}
+  margin-top:6px;
 }
 </style>
 </head>
 
 <body>
 
-<!-- ================= AUTH ================= -->
-<div class="auth-layout" id="auth">
-  <div class="auth-left">
+<!-- ===== AUTH ===== -->
+<div class="auth" id="auth">
+  <div class="left">
     <div>
       <h1>Xizoa</h1>
-      <p>No reels. No noise.<br>Just posts, quotes & conversations.</p>
+      <p>No reels. No noise.<br>Only posts & quotes.</p>
     </div>
   </div>
 
-  <div class="auth-right">
-    <div class="auth-card">
+  <div class="right">
+    <div class="card">
       <div class="logo">Xizoa</div>
 
-      <button class="btn primary" onclick="oauth('google')">
+      <button class="btn primary" onclick="login('google')">
         Continue with Google
       </button>
-
-      <button class="btn" onclick="oauth('github')">
+      <button class="btn" onclick="login('github')">
         Continue with GitHub
       </button>
-
-      <div class="sep">No password. Account auto-creates.</div>
     </div>
   </div>
 </div>
 
-<!-- ================= APP ================= -->
+<!-- ===== APP ===== -->
 <div class="app" id="app">
-
   <div class="nav">
     <div class="nav-inner">
       <strong>Xizoa</strong>
@@ -217,88 +168,46 @@ textarea{
     </div>
   </div>
 
-  <div class="container">
-    <div class="feed">
-
-      <!-- CREATE POST -->
-      <div class="create-box">
-        <textarea id="postText" rows="3" placeholder="Write a post…"></textarea>
-        <textarea id="quoteText" rows="2" placeholder="Optional quote…"></textarea>
-        <button class="btn primary" onclick="addPost()">Post</button>
-      </div>
-
-      <!-- POSTS -->
-      <div id="posts"></div>
-
+  <div class="feed">
+    <div class="create">
+      <textarea id="text" rows="3" placeholder="Write a post…"></textarea>
+      <textarea id="quote" rows="2" placeholder="Optional quote…"></textarea>
+      <button class="btn primary" onclick="addPost()">Post</button>
     </div>
-  </div>
 
-  <div class="bottom-nav">
-    <span>🏠</span>
-    <span>➕</span>
-    <span>👤</span>
+    <div id="posts"></div>
   </div>
 </div>
+
 <script>
 const API = "https://api.xizoa.com";
 
-/* ===== OAuth ===== */
-function oauth(p){
+function login(p){
   location.href = API + "/auth/" + p;
 }
 
-/* ===== Login detect ===== */
-if (location.search.includes("login=success")) {
-  document.getElementById("auth").style.display = "none";
-  document.getElementById("app").style.display = "block";
-  loadFeed();
+if(location.search.includes("login=success")){
+  auth.style.display="none";
+  app.style.display="block";
 }
 
-/* ===== Load Feed ===== */
-async function loadFeed(){
-  const res = await fetch(API + "/feed", { credentials: "include" });
-  const posts = await res.json();
+function addPost(){
+  const t=text.value.trim();
+  const q=quote.value.trim();
+  if(!t) return;
 
-  const postsDiv = document.getElementById("posts");
-  postsDiv.innerHTML = "";
-
-  posts.forEach(p => {
-    const el = document.createElement("div");
-    el.className = "post";
-    el.innerHTML = `
-      <div class="post-header">${p.user_email}</div>
-      <div class="post-content">
-        ${p.text}
-        ${p.quote ? `<div class="quote">“${p.quote}”</div>` : ""}
-      </div>
-    `;
-    postsDiv.appendChild(el);
-  });
+  const d=document.createElement("div");
+  d.className="post";
+  d.innerHTML=`
+    <div class="post-header">You</div>
+    <div class="post-body">
+      ${t}
+      ${q?`<div class="quote">“${q}”</div>`:""}
+    </div>`;
+  posts.prepend(d);
+  text.value=""; quote.value="";
 }
 
-/* ===== Add Post ===== */
-async function addPost(){
-  const text = postText.value.trim();
-  const quote = quoteText.value.trim();
-  if(!text) return alert("Write something");
-
-  const res = await fetch(API + "/posts/create", {
-    method: "POST",
-    credentials: "include",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ text, quote })
-  });
-
-  if(res.ok){
-    postText.value="";
-    quoteText.value="";
-    loadFeed();
-  } else {
-    alert("Failed to post");
-  }
-}
-
-/* ===== Logout ===== */
 function logout(){
   location.href="/";
 }
