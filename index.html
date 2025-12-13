@@ -8,173 +8,93 @@
 <link href="https://fonts.googleapis.com/css2?family=Grand+Hotel&display=swap" rel="stylesheet">
 
 <style>
-:root {
-  --bg: #fafafa;
-  --card: #fff;
-  --text: #262626;
-  --btn: #0095f6;
-  --border: #dbdbdb;
-}
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-  margin: 0;
-}
-.hidden { display: none; }
-
-.auth-container {
-  height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.auth-card {
-  width: 350px;
-  background: var(--card);
-  border: 1px solid var(--border);
-  padding: 30px;
-  text-align: center;
-}
-.logo {
-  font-family: 'Grand Hotel', cursive;
-  font-size: 3rem;
-  margin-bottom: 20px;
-}
-input {
-  width: 100%;
-  padding: 10px;
-  margin-bottom: 8px;
-  border: 1px solid var(--border);
-}
-.btn {
-  width: 100%;
-  padding: 8px;
-  background: var(--btn);
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  font-weight: 600;
-  cursor: pointer;
-  margin-top: 6px;
-}
-
-/* SOCIAL LOGIN */
-.social-login {
-  margin-top: 15px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.social-btn {
-  padding: 10px;
-  border-radius: 6px;
-  font-weight: 600;
-  cursor: pointer;
-  border: none;
-}
-.social-btn.google {
-  background: #fff;
-  border: 1px solid #dbdbdb;
-}
-.social-btn.github {
-  background: #24292e;
-  color: #fff;
-}
+:root{--bg:#fafafa;--card:#fff;--text:#262626;--btn:#0095f6;--border:#dbdbdb}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,sans-serif;margin:0}
+.hidden{display:none}
+.auth-container{height:100vh;display:flex;align-items:center;justify-content:center}
+.auth-card{width:350px;background:var(--card);border:1px solid var(--border);padding:30px;text-align:center}
+.logo{font-family:'Grand Hotel',cursive;font-size:3rem;margin-bottom:20px}
+input,textarea{width:100%;padding:10px;margin-bottom:8px;border:1px solid var(--border)}
+.btn{width:100%;padding:8px;background:var(--btn);color:#fff;border:none;border-radius:6px;font-weight:600}
+.social-login{margin-top:15px;display:flex;flex-direction:column;gap:8px}
+.social-btn{padding:10px;border-radius:6px;font-weight:600;border:none;cursor:pointer}
+.social-btn.google{background:#fff;border:1px solid #dbdbdb}
+.social-btn.github{background:#24292e;color:#fff}
+.app{max-width:500px;margin:auto;padding:10px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px;margin-bottom:10px}
 </style>
 </head>
 
 <body>
 
-<div class="auth-container">
+<div id="authView" class="auth-container">
   <div class="auth-card">
-
     <div class="logo">Xizoa</div>
 
-    <!-- LOGIN -->
     <div id="loginBox">
-      <input id="loginUser" placeholder="Username">
-      <input id="loginPass" type="password" placeholder="Password">
+      <input id="lUser" placeholder="Username">
+      <input id="lPass" type="password" placeholder="Password">
       <button class="btn" onclick="login()">Log in</button>
 
-      <!-- SOCIAL -->
       <div class="social-login">
-        <button class="social-btn google" onclick="comingSoon('Google')">
-          Continue with Google
-        </button>
-        <button class="social-btn github" onclick="comingSoon('GitHub')">
-          Continue with GitHub
-        </button>
+        <button class="social-btn google" onclick="soon('Google')">Continue with Google</button>
+        <button class="social-btn github" onclick="soon('GitHub')">Continue with GitHub</button>
       </div>
 
-      <p style="margin-top:15px;font-size:0.9rem;">
-        Don't have an account?
-        <span style="color:#0095f6;cursor:pointer;" onclick="toggleAuth()">Sign up</span>
-      </p>
+      <p onclick="toggle()" style="color:#0095f6;cursor:pointer">Sign up</p>
     </div>
 
-    <!-- SIGNUP -->
     <div id="signupBox" class="hidden">
-      <input id="regUser" placeholder="Username">
-      <input id="regPass" type="password" placeholder="Password">
+      <input id="rUser" placeholder="Username">
+      <input id="rPass" type="password" placeholder="Password">
       <button class="btn" onclick="register()">Sign up</button>
-
-      <!-- SOCIAL -->
-      <div class="social-login">
-        <button class="social-btn google" onclick="comingSoon('Google')">
-          Continue with Google
-        </button>
-        <button class="social-btn github" onclick="comingSoon('GitHub')">
-          Continue with GitHub
-        </button>
-      </div>
-
-      <p style="margin-top:15px;font-size:0.9rem;">
-        Have an account?
-        <span style="color:#0095f6;cursor:pointer;" onclick="toggleAuth()">Log in</span>
-      </p>
+      <p onclick="toggle()" style="color:#0095f6;cursor:pointer">Log in</p>
     </div>
-
   </div>
 </div>
 
+<div id="appView" class="hidden app">
+  <div class="card">
+    <textarea id="postText" rows="3" placeholder="Write something…"></textarea>
+    <button class="btn" onclick="post()">Post</button>
+  </div>
+  <div id="feed"></div>
+</div>
+
 <script>
-const API = "https://api.xizoa.com"; // CHANGE THIS
+const API="https://api.xizoa.com";   // ← बस यही बदलना है
+let me=null;
 
-function toggleAuth() {
-  loginBox.classList.toggle("hidden");
-  signupBox.classList.toggle("hidden");
+function toggle(){loginBox.classList.toggle("hidden");signupBox.classList.toggle("hidden")}
+function soon(x){alert(x+" login coming soon 🚧")}
+
+async function register(){
+  await fetch(API+"/auth/register",{method:"POST",headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({username:rUser.value,password:rPass.value})});
+  alert("Account created");toggle();
 }
 
-function comingSoon(name) {
-  alert(name + " login coming soon 🚧");
+async function login(){
+  const r=await fetch(API+"/auth/login",{method:"POST",headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({username:lUser.value,password:lPass.value})});
+  const d=await r.json();
+  if(!d.success)return alert("Login failed");
+  me=d.user;
+  authView.classList.add("hidden");
+  appView.classList.remove("hidden");
+  load();
 }
 
-async function register() {
-  await fetch(API + "/auth/register", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      username: regUser.value,
-      password: regPass.value
-    })
-  });
-  alert("Account created. Login now.");
-  toggleAuth();
+async function post(){
+  await fetch(API+"/posts/create",{method:"POST",headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({user_id:me.id,content:postText.value})});
+  postText.value="";load();
 }
 
-async function login() {
-  const res = await fetch(API + "/auth/login", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      username: loginUser.value,
-      password: loginPass.value
-    })
-  });
-  const data = await res.json();
-  if (!data.success) return alert("Login failed");
-  alert("Login successful");
+async function load(){
+  const r=await fetch(API+"/feed");const p=await r.json();
+  feed.innerHTML="";
+  p.forEach(x=>feed.innerHTML+=`<div class="card"><b>${x.username}</b><br>${x.content}</div>`);
 }
 </script>
 
