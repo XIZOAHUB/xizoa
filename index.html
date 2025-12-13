@@ -239,7 +239,6 @@ textarea{
     <span>👤</span>
   </div>
 </div>
-
 <script>
 const API = "https://api.xizoa.com";
 
@@ -249,32 +248,54 @@ function oauth(p){
 }
 
 /* ===== Login detect ===== */
-if(location.search.includes("login=success")){
-  document.getElementById("auth").style.display="none";
-  document.getElementById("app").style.display="block";
+if (location.search.includes("login=success")) {
+  document.getElementById("auth").style.display = "none";
+  document.getElementById("app").style.display = "block";
+  loadFeed();
 }
 
-/* ===== Dummy post system ===== */
-const postsDiv = document.getElementById("posts");
+/* ===== Load Feed ===== */
+async function loadFeed(){
+  const res = await fetch(API + "/feed", { credentials: "include" });
+  const posts = await res.json();
 
-function addPost(){
+  const postsDiv = document.getElementById("posts");
+  postsDiv.innerHTML = "";
+
+  posts.forEach(p => {
+    const el = document.createElement("div");
+    el.className = "post";
+    el.innerHTML = `
+      <div class="post-header">${p.user_email}</div>
+      <div class="post-content">
+        ${p.text}
+        ${p.quote ? `<div class="quote">“${p.quote}”</div>` : ""}
+      </div>
+    `;
+    postsDiv.appendChild(el);
+  });
+}
+
+/* ===== Add Post ===== */
+async function addPost(){
   const text = postText.value.trim();
   const quote = quoteText.value.trim();
   if(!text) return alert("Write something");
 
-  const el = document.createElement("div");
-  el.className="post";
-  el.innerHTML = `
-    <div class="post-header">You</div>
-    <div class="post-content">
-      ${text}
-      ${quote ? `<div class="quote">“${quote}”</div>` : ""}
-    </div>
-  `;
-  postsDiv.prepend(el);
+  const res = await fetch(API + "/posts/create", {
+    method: "POST",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ text, quote })
+  });
 
-  postText.value="";
-  quoteText.value="";
+  if(res.ok){
+    postText.value="";
+    quoteText.value="";
+    loadFeed();
+  } else {
+    alert("Failed to post");
+  }
 }
 
 /* ===== Logout ===== */
